@@ -13,7 +13,7 @@
 
     <form class="w-75 mx-auto">
 
-        <p class="mt-3">購入ア日
+        <p class="mt-3">購入い日
         </p>
         <div>
         <input id="datepicker" type="text" />
@@ -104,6 +104,7 @@
             });
         });
         $('#datepicker').datepicker({dateFormat: 'yy/mm/dd'});
+        $('#datepicker').datepicker("setDate", datetime_today);
       //  $('#datepicker').datepicker({dateFormat: 'yy-mm-dd'});
       //  $('#datepicker').datepicker("setDate", datetime_today);
 
