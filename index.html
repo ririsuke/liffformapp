@@ -13,10 +13,10 @@
 
     <form class="w-75 mx-auto">
 
-        <p class="mt-3">購入う日
+        <p class="mt-3">購入お日
         </p>
         <div>
-        <input id="datepicker" type="text" />
+        <input id="datepicker" type="text" name="buydate" />
     </div>
 
         
@@ -93,20 +93,19 @@
 
         $(function () {
             $('form').submit(function () {
+                const buydate = $('input[name="buydate"]').val();
                 const name    = $('input[name="name"]').val();
-                const udetate = $('input[name="udetate"]').val();
                 const fukkin  = $('input[name="fukkin"]').val();
                 const haikin  = $('input[name="haikin"]').val();
                 const sukuwat = $('input[name="sukuwat"]').val();
-                const msg = `${name}\n${udetate}\n${fukkin}\n${haikin}\n${sukuwat}`;
+                const msg = `${buydate}\n${name}\n${fukkin}\n${haikin}\n${sukuwat}`;
                 sendText(msg);
                 return false;
             });
         });
         $('#datepicker').datepicker({dateFormat: 'yy/mm/dd'});
         $('#datepicker').datepicker("setDate", 'today');
-      //  $('#datepicker').datepicker({dateFormat: 'yy-mm-dd'});
-      //  $('#datepicker').datepicker("setDate", datetime_today);
+
 
     </script>
 
