@@ -13,7 +13,7 @@
 
     <form class="w-75 mx-auto" id="temp_form">
 
-        <p class="mt-3">購入お日
+        <p class="mt-3">購入じゃ日
         </p>
         <div>
         <input id="datepicker" type="text" name="buydate" />
@@ -95,11 +95,12 @@
             $('form').submit(function () {
                 const buydate = $('input[name="buydate"]').val();
                 //const radio    = $('input[name="radio"]').val();
-                const radio = document.getElementById("temp_form").named;
+                radio = document.getElementById("temp_form").named;   
+                const radioval = radio.value;
                 const fukkin  = $('input[name="fukkin"]').val();
                 const haikin  = $('input[name="haikin"]').val();
                 const sukuwat = $('input[name="sukuwat"]').val();
-                const msg = `${buydate}\n${radio}\n${fukkin}\n${haikin}\n${sukuwat}`;
+                const msg = `${buydate}\n${radioval}\n${fukkin}\n${haikin}\n${sukuwat}`;
                 sendText(msg);
                 return false;
             });
