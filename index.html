@@ -9,11 +9,12 @@
 </head>
 <body>
 
-
+    <p>v0000
+    </p>
 
     <form class="w-75 mx-auto" id="temp_form">
 
-        <p class="mt-3">購入じゃ日
+        <p class="mt-3">購入日
         </p>
         <div>
         <input id="datepicker" type="text" name="buydate" />
@@ -34,6 +35,27 @@
           亜紗美
         </label>
       </div>
+
+      <p class="mt-3">支払者
+    </p>
+    <div class="form-check form-check-inline">
+    <input class="form-check-input" type="radio" name="named2" value="遼介" id="flexRadioDefault3" checked>
+    <label class="form-check-label" for="flexRadioDefault3">
+      遼介
+    </label>
+  </div>
+  <div class="form-check form-check-inline">
+    <input class="form-check-input" type="radio" name="named2" value="亜紗美" id="flexRadioDefault4">
+    <label class="form-check-label" for="flexRadioDefault4">
+      亜紗美
+    </label>
+  </div>
+  <div class="form-check form-check-inline">
+    <input class="form-check-input" type="radio" name="named2" value="共有" id="flexRadioDefault5">
+    <label class="form-check-label" for="flexRadioDefault5">
+      共有
+    </label>
+  </div>
 
 
         <p class="mt-3">腕立て</p>
@@ -97,10 +119,12 @@
                 //const radio    = $('input[name="radio"]').val();
                 radio = document.getElementById("temp_form").named;   
                 const radioval = radio.value;
+                radio2 = document.getElementById("temp_form").named2;   
+                const radioval2 = radio2.value;
                 const fukkin  = $('input[name="fukkin"]').val();
                 const haikin  = $('input[name="haikin"]').val();
                 const sukuwat = $('input[name="sukuwat"]').val();
-                const msg = `${buydate}\n${radioval}\n${fukkin}\n${haikin}\n${sukuwat}`;
+                const msg = `${buydate}\n${radioval}\n${radioval2}\n${haikin}\n${sukuwat}`;
                 sendText(msg);
                 return false;
             });
