@@ -2,15 +2,12 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>筋トレ管理</title>
+    <title>V0002</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rossorigin="anonymous">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/themes/base/jquery-ui.min.css">
 </head>
 <body>
-
-    <p>v0001
-    </p>
 
     <form class="w-75 mx-auto" id="temp_form">
 
@@ -132,7 +129,9 @@
                 const radioval = radio.value;
                 radio2 = document.getElementById("temp_form").named2;   
                 const radioval2 = radio2.value;
-                const himoku  = $('input[name="himoku"]').val();
+                himoku = document.getElementById("temp_form").himoku;   
+                const himoku = himoku.value;
+                //const himoku  = $('input[name="himoku"]').val();
                 const haikin  = $('input[name="haikin"]').val();
                 const sukuwat = $('input[name="sukuwat"]').val();
                 const msg = `${buydate}\n${radioval}\n${radioval2}\n${himoku}\n${sukuwat}`;
