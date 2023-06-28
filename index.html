@@ -2,7 +2,7 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>V0002</title>
+    <title>V0003</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rossorigin="anonymous">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/themes/base/jquery-ui.min.css">
@@ -57,7 +57,7 @@
 
         <p class="mt-3">■費目</p>
         <div>
-            <select class="form-control form-control-lg" id="inputState" name="himoku" type="text" required>
+            <select class="form-control form-control-lg" id="inputState" name="himokuname" type="text" required>
                 <option value="食費">食費</option>
                 <option value="日用品費">日用品費</option>
                 <option value="外食・出前費">外食・出前費</option>
@@ -70,11 +70,8 @@
 
 
 
-        <p class="mt-3">腹筋</p>
-        <div>
-            <input class="form-control w-100 mt-1" name="fukkin" required>
-        </div>
-        <p class="mt-3">背筋</p>
+     
+   <p class="mt-3">背筋</p>
         <div>
             <input class="form-control w-100 mt-1" name="haikin" required>
         </div>
@@ -129,7 +126,7 @@
                 const radioval = radio.value;
                 radio2 = document.getElementById("temp_form").named2;   
                 const radioval2 = radio2.value;
-                himoku = document.getElementById("temp_form").himoku;   
+                himoku = document.getElementById("temp_form").himokuname;   
                 const himoku = himoku.value;
                 //const himoku  = $('input[name="himoku"]').val();
                 const haikin  = $('input[name="haikin"]').val();
