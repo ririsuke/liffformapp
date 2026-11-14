@@ -1,156 +1,359 @@
-<html>
+<!doctype html>
+<html lang="ja">
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>V0007</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rossorigin="anonymous">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/themes/base/jquery-ui.min.css">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>V0008</title>
+    <style>
+        :root {
+            --bg: #f4f5f7;
+            --card: #ffffff;
+            --text: #1f2328;
+            --muted: #6b7280;
+            --line: #d9dce1;
+            --accent: #06c755;
+            --accent-text: #ffffff;
+            --accent-soft: #e6f9ee;
+            --error: #d93025;
+        }
+        * { box-sizing: border-box; }
+        html, body { margin: 0; }
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Noto Sans JP", sans-serif;
+            font-size: 16px;
+            line-height: 1.5;
+            -webkit-tap-highlight-color: transparent;
+        }
+        form {
+            max-width: 480px;
+            margin: 0 auto;
+            padding: 16px 16px calc(96px + env(safe-area-inset-bottom));
+        }
+        .section {
+            background: var(--card);
+            border-radius: 12px;
+            padding: 14px;
+            margin-bottom: 12px;
+        }
+        .label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--muted);
+            margin: 0 0 8px;
+        }
+        input[type="date"], input[type="text"] {
+            width: 100%;
+            min-height: 48px;
+            padding: 10px 12px;
+            font-size: 18px;
+            color: var(--text);
+            background: #fff;
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            appearance: none;
+            -webkit-appearance: none;
+        }
+        input:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+        /* 金額 */
+        .amount { position: relative; }
+        .amount span {
+            position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+            font-size: 20px; color: var(--muted);
+        }
+        .amount input { padding-left: 34px; font-size: 24px; font-weight: 600; }
+
+        /* タップボタン（ラジオ） */
+        .choices { display: grid; gap: 8px; }
+        .choices.cols-2 { grid-template-columns: repeat(2, 1fr); }
+        .choices.cols-3 { grid-template-columns: repeat(3, 1fr); }
+        .choice input { position: absolute; opacity: 0; pointer-events: none; }
+        .choice span {
+            display: flex; align-items: center; justify-content: center;
+            min-height: 48px; padding: 6px 4px;
+            text-align: center; font-size: 15px; line-height: 1.25;
+            border: 1px solid var(--line); border-radius: 10px;
+            background: #fff; cursor: pointer; user-select: none;
+        }
+        .choices.small span { font-size: 13px; min-height: 46px; }
+        .choice input:checked + span {
+            background: var(--accent-soft);
+            border-color: var(--accent);
+            color: #04833a;
+            font-weight: 700;
+        }
+        .choice input:focus-visible + span { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+        .error { color: var(--error); font-size: 14px; margin: 6px 0 0; min-height: 0; }
+        .error:empty { display: none; }
+        input.invalid { border-color: var(--error); }
+
+        /* 送信ボタン（画面下に固定） */
+        .submit-bar {
+            position: fixed; left: 0; right: 0; bottom: 0;
+            padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+            background: rgba(244, 245, 247, 0.95);
+            border-top: 1px solid var(--line);
+        }
+        .btn {
+            display: block; width: 100%; max-width: 448px; margin: 0 auto;
+            min-height: 52px; font-size: 18px; font-weight: 700;
+            border: none; border-radius: 12px; cursor: pointer;
+        }
+        .btn-primary { background: var(--accent); color: var(--accent-text); }
+        .btn-secondary { background: #e5e7eb; color: var(--text); }
+        .btn:disabled { opacity: 0.6; cursor: default; }
+
+        /* 確認ダイアログ */
+        .overlay {
+            position: fixed; inset: 0; display: none;
+            align-items: flex-end; justify-content: center;
+            background: rgba(0, 0, 0, 0.45); z-index: 10;
+        }
+        .overlay.open { display: flex; }
+        .sheet {
+            width: 100%; max-width: 480px;
+            background: var(--card);
+            border-radius: 16px 16px 0 0;
+            padding: 20px 16px calc(16px + env(safe-area-inset-bottom));
+        }
+        .sheet h2 { font-size: 18px; margin: 0 0 12px; }
+        .summary { margin: 0 0 16px; }
+        .summary div {
+            display: flex; justify-content: space-between; gap: 12px;
+            padding: 8px 0; border-bottom: 1px solid #eef0f2;
+        }
+        .summary dt { color: var(--muted); flex-shrink: 0; }
+        .summary dd { margin: 0; text-align: right; font-weight: 600; word-break: break-all; }
+        .summary .big { font-size: 22px; }
+        .sheet-buttons { display: grid; grid-template-columns: 1fr 2fr; gap: 8px; }
+    </style>
 </head>
 <body>
 
-    <form class="w-75 mx-auto" id="temp_form">
+<form id="temp_form" novalidate>
 
-        <p class="mt-3">■購入日
-        </p>
-        <div>
-        <input id="datepicker" type="text" name="buydate" />
+    <div class="section">
+        <label class="label" for="buydate">購入日</label>
+        <input id="buydate" type="date" name="buydate" required>
     </div>
 
-        
-        <p class="mt-3">■購入者
-        </p>
-        <div class="form-check form-check-inline">
-        <input class="form-check-input" type="radio" name="named" value="遼介" id="flexRadioDefault1">
-        <label class="form-check-label" for="flexRadioDefault1">
-          遼介
-        </label>
-      </div>
-      <div class="form-check form-check-inline">
-        <input class="form-check-input" type="radio" name="named" value="亜紗美" id="flexRadioDefault2" checked>
-        <label class="form-check-label" for="flexRadioDefault2">
-          亜紗美
-        </label>
-      </div>
-
-      <p class="mt-3">■支払者
-    </p>
-    <div class="form-check form-check-inline">
-    <input class="form-check-input" type="radio" name="named2" value="遼介" id="flexRadioDefault3" checked>
-    <label class="form-check-label" for="flexRadioDefault3">
-      遼介
-    </label>
-  </div>
-  <div class="form-check form-check-inline">
-    <input class="form-check-input" type="radio" name="named2" value="亜紗美" id="flexRadioDefault4">
-    <label class="form-check-label" for="flexRadioDefault4">
-      亜紗美
-    </label>
-  </div>
-  <div class="form-check form-check-inline">
-    <input class="form-check-input" type="radio" name="named2" value="共有" id="flexRadioDefault5">
-    <label class="form-check-label" for="flexRadioDefault5">
-      共有
-    </label>
-  </div>
-
-
-        <p class="mt-3">■費目</p>
-        <div>
-            <select class="form-control form-control-lg" id="inputState" name="himokuname" type="text" required>
-                <option value="食費">食費</option>
-                <option value="日用品費">日用品費</option>
-                <option value="外食・出前費">外食・出前費</option>
-                <option value="娯楽費">娯楽費</option>
-                <option value="交通費">交通費</option>
-                <option value="医療費">医療費</option>
-                <option value="被服・美容費">被服・美容費</option>
-                <option value="こども費">こども費</option>
-                <option value="家具・家電費">家具・家電費</option>
-                <option value="特別費">特別費</option>
-                <option value="雑費">雑費</option>
-                <option value="住居費">住居費</option>
-                <option value="水道光熱費">水道光熱費</option>
-                <option value="通信費">通信費</option>
-                <option value="情報サービス費">情報サービス費</option>
-                <option value="保険料">保険料</option>
-                <option value="小遣い">小遣い</option>
-                <option value="教育費">教育費</option>
-             </select>
+    <div class="section">
+        <span class="label">購入者</span>
+        <div class="choices cols-2">
+            <label class="choice"><input type="radio" name="named" value="遼介"><span>遼介</span></label>
+            <label class="choice"><input type="radio" name="named" value="亜紗美" checked><span>亜紗美</span></label>
         </div>
+    </div>
 
-
-
- <p class="mt-3">金額</p>
-        <div>
-            <input class="form-control w-100 mt-1" name="kingaku" required>
+    <div class="section">
+        <span class="label">支払者</span>
+        <div class="choices cols-3">
+            <label class="choice"><input type="radio" name="named2" value="遼介" checked><span>遼介</span></label>
+            <label class="choice"><input type="radio" name="named2" value="亜紗美"><span>亜紗美</span></label>
+            <label class="choice"><input type="radio" name="named2" value="共有"><span>共有</span></label>
         </div>
-        <p class="mt-3">店舗・備考</p>
-        <div>
-            <input class="form-control w-100 mt-1" name="bikou" required>
+    </div>
+
+    <div class="section">
+        <span class="label">費目</span>
+        <div class="choices cols-3 small" id="himoku-list"></div>
+    </div>
+
+    <div class="section">
+        <label class="label" for="kingaku">金額</label>
+        <div class="amount">
+            <span>¥</span>
+            <input id="kingaku" type="text" name="kingaku" inputmode="numeric" autocomplete="off" placeholder="0">
         </div>
-        <input type="submit" class="mt-4 btn btn-primary" value="送信">
-    </form>
+        <p class="error" id="kingaku-error"></p>
+    </div>
 
-    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" crossorigin="anonymous"></script>
-    <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
-    <script>
+    <div class="section">
+        <label class="label" for="bikou">店舗・備考</label>
+        <input id="bikou" type="text" name="bikou" autocomplete="off">
+        <p class="error" id="bikou-error"></p>
+    </div>
 
-        $(document).ready(function () {
-            const liffId = "1661170472-dElR1N0A";
-            initializeLiff(liffId);
-        })
+    <div class="submit-bar">
+        <button type="submit" class="btn btn-primary" id="submit-btn">確認する</button>
+    </div>
+</form>
 
-        function initializeLiff(liffId) {
-            liff.init({
-                liffId: liffId
-            }).then(() => {
-                initializeApp();
-            }).catch((err) => {
-                console.log('LIFF Initialization failed ', err);
+<div class="overlay" id="confirm" role="dialog" aria-modal="true" aria-labelledby="confirm-title">
+    <div class="sheet">
+        <h2 id="confirm-title">この内容で送信しますか？</h2>
+        <dl class="summary" id="summary"></dl>
+        <div class="sheet-buttons">
+            <button type="button" class="btn btn-secondary" id="back-btn">戻る</button>
+            <button type="button" class="btn btn-primary" id="send-btn">送信する</button>
+        </div>
+    </div>
+</div>
+
+<script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
+<script>
+    const LIFF_ID = "1661170472-dElR1N0A";
+    const STORAGE_KEY = "liffformapp:last";
+    const HIMOKU = [
+        "食費", "日用品費", "外食・出前費", "娯楽費", "交通費", "医療費",
+        "被服・美容費", "こども費", "家具・家電費", "特別費", "雑費", "住居費",
+        "水道光熱費", "通信費", "情報サービス費", "保険料", "小遣い", "教育費"
+    ];
+
+    const form = document.getElementById("temp_form");
+    const $ = (id) => document.getElementById(id);
+
+    // 費目ボタンを作る
+    $("himoku-list").innerHTML = HIMOKU.map((h, i) =>
+        `<label class="choice"><input type="radio" name="himokuname" value="${h}"${i === 0 ? " checked" : ""}><span>${h}</span></label>`
+    ).join("");
+
+    // 今日の日付を入れる
+    function todayIso() {
+        const d = new Date();
+        const p = (n) => String(n).padStart(2, "0");
+        return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+    }
+    $("buydate").value = todayIso();
+
+    // 前回の選択を復元する（保存できない環境では何もしない）
+    function loadLast() {
+        try {
+            const last = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+            ["named", "named2", "himokuname"].forEach((name) => {
+                if (!last[name]) return;
+                const el = form.querySelector(`input[name="${name}"][value="${CSS.escape(last[name])}"]`);
+                if (el) el.checked = true;
             });
-        }
+        } catch (e) { /* 無視 */ }
+    }
+    function saveLast(data) {
+        try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify({
+                named: data.named, named2: data.named2, himokuname: data.himoku
+            }));
+        } catch (e) { /* 無視 */ }
+    }
+    loadLast();
 
-        function sendText(text) {
-            liff.sendMessages([{
-                'type': 'text',
-                'text': text
-            }]).then(function () {
+    // 全角数字→半角、カンマ・空白・¥を除く
+    function normalizeAmount(s) {
+        return s.replace(/[０-９]/g, (c) => String.fromCharCode(c.charCodeAt(0) - 0xFEE0))
+                .replace(/[,，\s¥￥円]/g, "");
+    }
+    // 入力中に 1,234 のように区切りを付ける
+    $("kingaku").addEventListener("input", (e) => {
+        const digits = normalizeAmount(e.target.value).replace(/\D/g, "");
+        e.target.value = digits ? Number(digits).toLocaleString("ja-JP") : "";
+        clearError("kingaku");
+    });
+    $("bikou").addEventListener("input", () => clearError("bikou"));
+
+    function setError(field, msg) {
+        $(field + "-error").textContent = msg;
+        $(field).classList.add("invalid");
+    }
+    function clearError(field) {
+        $(field + "-error").textContent = "";
+        $(field).classList.remove("invalid");
+    }
+
+    function collect() {
+        const val = (name) => (form.querySelector(`input[name="${name}"]:checked`) || {}).value || "";
+        return {
+            buydate: $("buydate").value.replace(/-/g, "/"),   // 例: 2026/11/15（従来と同じ形式）
+            named: val("named"),
+            named2: val("named2"),
+            himoku: val("himokuname"),
+            kingaku: normalizeAmount($("kingaku").value),
+            bikou: $("bikou").value.trim()
+        };
+    }
+
+    function validate(d) {
+        let ok = true;
+        if (!/^\d+$/.test(d.kingaku) || Number(d.kingaku) <= 0) {
+            setError("kingaku", "金額を数字で入力してください");
+            ok = false;
+        }
+        if (!d.bikou) {
+            setError("bikou", "店舗・備考を入力してください");
+            ok = false;
+        }
+        if (!d.buydate) {
+            alert("購入日を選んでください");
+            ok = false;
+        }
+        return ok;
+    }
+
+    const esc = (s) => s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+    let pending = null;
+    let sending = false;
+
+    form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const d = collect();
+        if (!validate(d)) {
+            const firstError = form.querySelector(".invalid");
+            if (firstError) firstError.focus();
+            return;
+        }
+        pending = d;
+        const rows = [
+            ["購入日", d.buydate],
+            ["購入者", d.named],
+            ["支払者", d.named2],
+            ["費目", d.himoku],
+            ["金額", "¥" + Number(d.kingaku).toLocaleString("ja-JP"), true],
+            ["店舗・備考", d.bikou]
+        ];
+        $("summary").innerHTML = rows.map(([k, v, big]) =>
+            `<div><dt>${k}</dt><dd${big ? ' class="big"' : ""}>${esc(v)}</dd></div>`
+        ).join("");
+        $("confirm").classList.add("open");
+        $("send-btn").focus();
+    });
+
+    $("back-btn").addEventListener("click", () => {
+        if (sending) return;
+        $("confirm").classList.remove("open");
+    });
+
+    $("send-btn").addEventListener("click", () => {
+        if (sending || !pending) return;
+        sending = true;
+        $("send-btn").disabled = true;
+        $("back-btn").disabled = true;
+        $("send-btn").textContent = "送信中…";
+
+        // 受け取り側が読む6行の形式は従来のまま
+        const d = pending;
+        const msg = `${d.buydate}\n${d.named}\n${d.named2}\n${d.himoku}\n${d.kingaku}\n${d.bikou}`;
+
+        liffReady
+            .then(() => liff.sendMessages([{ type: "text", text: msg }]))
+            .then(() => {
+                saveLast(d);
                 liff.closeWindow();
-            }).catch(function (error) {
-                window.alert('Failed to send message ' + error);
+            })
+            .catch((err) => {
+                alert("送信できませんでした。もう一度お試しください。\n" + (err && err.message ? err.message : err));
+                sending = false;
+                $("send-btn").disabled = false;
+                $("back-btn").disabled = false;
+                $("send-btn").textContent = "送信する";
             });
-        }
+    });
 
-        const params = (new URL(document.location)).searchParams;
-        const key = params.get('key');
-
-        $(function () {
-            $('form').submit(function () {
-                const buydate = $('input[name="buydate"]').val();
-                //const radio    = $('input[name="radio"]').val();
-                radio = document.getElementById("temp_form").named;   
-                const radioval = radio.value;
-                radio2 = document.getElementById("temp_form").named2;   
-                const radioval2 = radio2.value;
-               // himoku = document.getElementById("temp_form").himokuname;   
-                //const himoku = himoku.value;
-                const himoku  = $('select[name="himokuname"]').val();
-                const kingaku  = $('input[name="kingaku"]').val();
-                const bikou = $('input[name="bikou"]').val();
-                const msg = `${buydate}\n${radioval}\n${radioval2}\n${himoku}\n${kingaku}\n${bikou}`;
-                sendText(msg);
-                return false;
-            });
-        });
-        $('#datepicker').datepicker({dateFormat: 'yy/mm/dd'});
-        $('#datepicker').datepicker("setDate", 'today');
-
-
-    </script>
+    const liffReady = (window.liff ? liff.init({ liffId: LIFF_ID }) : Promise.reject(new Error("LIFF SDK を読み込めませんでした")));
+    liffReady.catch((err) => console.log("LIFF Initialization failed ", err));
+</script>
 
 </body>
 </html>
